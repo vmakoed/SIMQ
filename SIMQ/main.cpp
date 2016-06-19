@@ -17,10 +17,11 @@ void free_matrix(float* matrix[], int rows);
 void fill_matrix_a(int n, float* matrix_a[], char *argv[]);
 void fill_array_b(int n, float array_b[], char *argv[]);
 
-void show_matrix(float *matrix[], int width, int height);
+void show_matrix(float* matrix[], int rows, int cols);
 void show_array(float array[], int size);
 
 void arrcpy(int n, float array_dest[], float array_src[]);
+void matrcpy(int rows, int columns, float* matrix_dest[], float* matrix_src[]);
 
 simq_result* simq(int n, float* matrix_a[], float array_b[]);
 
@@ -51,8 +52,6 @@ int main(int argc, char *argv[]) {
 	simq_result* result;
 	result = simq(n, matrix_a, array_b);
 
-	show_array(result->solution, n);
-
 	delete[] result->solution;
 	delete[] result;
 	delete[] array_b;
@@ -65,7 +64,15 @@ simq_result* simq(int n, float* matrix_a[], float array_b[]) {
 	simq_result* result = new simq_result;
 	result->solution = new float[n];
 
-	arrcpy(n, result->solution, array_b);
+	float** extended_matrix = matrix_malloc(n, n + 1);
+	matrcpy(n, n, extended_matrix, matrix_a);
+
+	for (int i = 0; i < n; i++) {
+		extended_matrix[i][n] = array_b[i];
+	}
+
+	show_matrix(extended_matrix, n, n + 1);
+	cout << endl;
 
 	return result;
 }
@@ -106,13 +113,9 @@ void fill_array_b(int n, float array_b[], char *argv[]) {
 	}
 }
 
-void show_matrix(float *matrix[], int width, int height) {
-	for (int i = 0; i < width; i++) {
-		for (int j = 0; j < height; j++) {
-			cout << matrix[i][j] << ' ';
-		}
-
-		cout << endl;
+void show_matrix(float* matrix[], int rows, int cols) {
+	for (int i = 0; i < rows; i++) {
+		show_array(matrix[i], cols);
 	}
 }
 
@@ -122,6 +125,12 @@ void show_array(float array[], int size) {
 	}
 
 	cout << endl;
+}
+
+void matrcpy(int rows, int columns, float* matrix_dest[], float* matrix_src[]) {
+	for (int i = 0; i < rows; i++) {
+		arrcpy(columns, matrix_dest[i], matrix_src[i]);
+	}
 }
 
 void arrcpy(int n, float array_dest[], float array_src[]) {
