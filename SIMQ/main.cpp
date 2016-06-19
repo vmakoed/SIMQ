@@ -15,6 +15,14 @@ void fill_array_b(int n, float* array_b, char *argv[]);
 void show_matrix(float *matrix[], int width, int height);
 void show_array(float array[], int size);
 
+// Command line arguments format: 
+// <n as matrix_dimensions> <matrix_a[0, 0]...matrix_a[n, n]> <array_b[0]...array_b[n]>
+//
+// Example:
+// n = 3; matrix_a = [[1, 1, 1], [1, 0, -1], [1, 2, 1]]; matrix_b = [6, -2, 3]
+//
+// Command line:
+// 3 1 1 1 1 0 -1 1 2 1 6 -2 3
 
 int main(int argc, char *argv[]) {
 	int n = atoi(argv[n_argv_pos]);
