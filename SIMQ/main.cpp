@@ -4,16 +4,25 @@
 
 using namespace std;
 
+typedef struct simq_result {
+	float* solution;
+	int error;
+};
+
 const int n_argv_pos = 1;
 
 float** matrix_malloc(int rows, int columns);
 void free_matrix(float* matrix[], int rows);
 
 void fill_matrix_a(int n, float* matrix_a[], char *argv[]);
-void fill_array_b(int n, float* array_b, char *argv[]);
+void fill_array_b(int n, float array_b[], char *argv[]);
 
 void show_matrix(float *matrix[], int width, int height);
 void show_array(float array[], int size);
+
+void arrcpy(int n, float array_dest[], float array_src[]);
+
+simq_result* simq(int n, float* matrix_a[], float array_b[]);
 
 // Command line arguments format: 
 // <n as matrix_dimensions> <matrix_a[0, 0]...matrix_a[n, n]> <array_b[0]...array_b[n]>
@@ -28,19 +37,37 @@ int main(int argc, char *argv[]) {
 	int n = atoi(argv[n_argv_pos]);
 
 	float** matrix_a = matrix_malloc(n, n);
-	float* array_b = new float[n];
-
 	fill_matrix_a(n, matrix_a, argv);
+
+	float* array_b = new float[n];
 	fill_array_b(n, array_b, argv);
 
 	show_matrix(matrix_a, n, n);
 	cout << endl;
-	show_array(array_b, n);
 
+	show_array(array_b, n);
+	cout << endl;
+
+	simq_result* result;
+	result = simq(n, matrix_a, array_b);
+
+	show_array(result->solution, n);
+
+	delete[] result->solution;
+	delete[] result;
 	delete[] array_b;
 	free_matrix(matrix_a, n);
 	
 	return 0;
+}
+
+simq_result* simq(int n, float* matrix_a[], float array_b[]) {
+	simq_result* result = new simq_result;
+	result->solution = new float[n];
+
+	arrcpy(n, result->solution, array_b);
+
+	return result;
 }
 
 float** matrix_malloc(int rows, int columns) {
@@ -70,7 +97,7 @@ void fill_matrix_a(int n, float* matrix_a[], char *argv[]) {
 	}
 }
 
-void fill_array_b(int n, float* array_b, char *argv[]) {
+void fill_array_b(int n, float array_b[], char *argv[]) {
 	int current_argv_pos = n_argv_pos + pow(n, 2) + 1;
 
 	for (int i = 0; i < n; i++) {
@@ -95,4 +122,10 @@ void show_array(float array[], int size) {
 	}
 
 	cout << endl;
+}
+
+void arrcpy(int n, float array_dest[], float array_src[]) {
+	for (int i = 0; i < n; i++) {
+		array_dest[i] = array_src[i];
+	}
 }
